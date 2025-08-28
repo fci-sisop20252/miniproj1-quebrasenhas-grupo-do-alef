@@ -79,6 +79,10 @@ int main(int argc, char *argv[]) {
     // - password_len deve estar entre 1 e 10
     // - num_workers deve estar entre 1 e MAX_WORKERS
     // - charset não pode ser vazio
+    password_len >= 1 && password_len <= 10 ? printf("Valido!") : return 1;
+    num_workers >= 1 && num_workers <= MAX_WORKERS ? printf("Valido!") : return 1;
+    charset_len > 0 ? printf("Valido!") : return 1;
+
     
     printf("=== Mini-Projeto 1: Quebra de Senhas Paralelo ===\n");
     printf("Hash MD5 alvo: %s\n", target_hash);
@@ -100,9 +104,10 @@ int main(int argc, char *argv[]) {
     // Calcular quantas senhas cada worker deve verificar
     // DICA: Use divisão inteira e distribua o resto entre os primeiros workers
     
-    // IMPLEMENTE AQUI:
-    // long long passwords_per_worker = ?
-    // long long remaining = ?
+    // IMPLEMENTE AQUI: Rdtcm notas: nao testei!!!
+    long long total_possibilities = password_len ** charset_len;
+    long long passwords_per_worker = total_possibilities / MAX_WORKERS;
+    long long remaining = total_possibilities % MAX_WORKERS;
     
     // Arrays para armazenar PIDs dos workers
     pid_t workers[MAX_WORKERS];

@@ -41,10 +41,16 @@ int increment_password(char *password, const char *charset, int charset_len, int
     // IMPLEMENTE AQUI:
     // - Percorrer password de trás para frente
     // - Para cada posição, encontrar índice atual no charset
-    // - Incrementar índice
+    // - Incrementar índicechar
     // - Se não estourou: atualizar caractere e retornar 1
     // - Se estourou: definir como primeiro caractere e continuar loop
     // - Se todos estouraram: retornar 0 (fim do espaço)
+
+    for (int i = password_len; i > 0; i--) {
+        
+    }
+
+
     
     return 0;  // SUBSTITUA por sua implementação
 }
