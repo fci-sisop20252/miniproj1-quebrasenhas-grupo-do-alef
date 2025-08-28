@@ -46,9 +46,11 @@ int increment_password(char *password, const char *charset, int charset_len, int
     // - Se estourou: definir como primeiro caractere e continuar loop
     // - Se todos estouraram: retornar 0 (fim do espaço)
 
-    for (int i = password_len; i > 0; i--) {
+
+    for (int i = password_len - 1; i >= 0; i--) {
+        int index = 0;
+
         
-    }
 
 
     
@@ -108,6 +110,15 @@ int main(int argc, char *argv[]) {
     int charset_len = strlen(charset);
     
     printf("[Worker %d] Iniciado: %s até %s\n", worker_id, start_password, end_password);
+
+    //teste do incremenbto de passwd
+    // CÓDIGO DE TESTE - REMOVER DEPOIS
+    char test[4] = "aaa";
+    for (int i = 0; i < 10; i++) {
+        printf("Senha %d: %s\n", i, test);
+        increment_password(test, "abc", 3, 3);
+    }
+    return 0;  // Sair após teste
     
     // Buffer para a senha atual
     char current_password[11];

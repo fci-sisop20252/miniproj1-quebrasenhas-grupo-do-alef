@@ -79,9 +79,21 @@ int main(int argc, char *argv[]) {
     // - password_len deve estar entre 1 e 10
     // - num_workers deve estar entre 1 e MAX_WORKERS
     // - charset não pode ser vazio
-    password_len >= 1 && password_len <= 10 ? printf("Valido!") : return 1;
-    num_workers >= 1 && num_workers <= MAX_WORKERS ? printf("Valido!") : return 1;
-    charset_len > 0 ? printf("Valido!") : return 1;
+    if (password_len >= 1 && password_len <= 10) 
+        printf("Valido!");
+    else 
+        return 1;
+
+    if (num_workers >= 1 && num_workers <= MAX_WORKERS) 
+        print("num_workers validos");
+    else 
+        return 1;
+
+    if (charset_len > 0) 
+        printf("Charset valido");
+    else 
+        return 1;
+  
 
     
     printf("=== Mini-Projeto 1: Quebra de Senhas Paralelo ===\n");
@@ -105,7 +117,7 @@ int main(int argc, char *argv[]) {
     // DICA: Use divisão inteira e distribua o resto entre os primeiros workers
     
     // IMPLEMENTE AQUI: Rdtcm notas: nao testei!!!
-    long long total_possibilities = password_len ** charset_len;
+    long long total_possibilities = (long long)pow(password_len, charset_len); // --> numeros grandes pode ocorrer overflow 
     long long passwords_per_worker = total_possibilities / MAX_WORKERS;
     long long remaining = total_possibilities % MAX_WORKERS;
     
