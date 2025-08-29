@@ -22,6 +22,9 @@
 #define RESULT_FILE "password_found.txt"
 #define PROGRESS_INTERVAL 100000  // Reportar progresso a cada N senhas
 
+// varivel estatica global para controlar a posicao da senha
+static int pos = 0;
+
 /**
  * Incrementa uma senha para a próxima na ordem lexicográfica (aaa -> aab -> aac...)
  * 
@@ -46,14 +49,22 @@ int increment_password(char *password, const char *charset, int charset_len, int
     // - Se estourou: definir como primeiro caractere e continuar loop
     // - Se todos estouraram: retornar 0 (fim do espaço)
 
-
-    for (int i = password_len - 1; i >= 0; i--) {
+    for (int i = password_len - 1; >= 0; i--) {
         int index = 0;
 
-        
+        while (index < charset_len && charset[index] != password[i]) {
+            index++;
+        }
 
+        if (index >= charset_len) return 0;
 
-    
+        if (index + 1 < charset_len) {
+            password[i] = charset[index + 1];
+            return 1;
+        } else {
+            password[i] = charset[0]; 
+        }
+    }
     return 0;  // SUBSTITUA por sua implementação
 }
 
@@ -88,6 +99,8 @@ void save_result(int worker_id, const char *password) {
     // - Tentar abrir arquivo com O_CREAT | O_EXCL | O_WRONLY
     // - Se sucesso: escrever resultado e fechar
     // - Se falhou: outro worker já encontrou
+
+
 }
 
 /**
@@ -110,15 +123,6 @@ int main(int argc, char *argv[]) {
     int charset_len = strlen(charset);
     
     printf("[Worker %d] Iniciado: %s até %s\n", worker_id, start_password, end_password);
-
-    //teste do incremenbto de passwd
-    // CÓDIGO DE TESTE - REMOVER DEPOIS
-    char test[4] = "aaa";
-    for (int i = 0; i < 10; i++) {
-        printf("Senha %d: %s\n", i, test);
-        increment_password(test, "abc", 3, 3);
-    }
-    return 0;  // Sair após teste
     
     // Buffer para a senha atual
     char current_password[11];
@@ -131,6 +135,15 @@ int main(int argc, char *argv[]) {
     long long passwords_checked = 0;
     time_t start_time = time(NULL);
     time_t last_progress_time = start_time;
+
+     //teste do incremenbto de passwd
+    // CÓDIGO DE TESTE - REMOVER DEPOIS
+    char test[4] = "aaa";
+    for (int i = 0; i < 10; i++) {
+        printf("Senha %d: %s\n", i, test);
+        increment_password(test, "abc", 3, 3);
+    }
+    return 0;  // Sair após teste
     
     // Loop principal de verificação
     while (1) {
@@ -139,15 +152,23 @@ int main(int argc, char *argv[]) {
         
         // TODO 4: Calcular o hash MD5 da senha atual
         // IMPORTANTE: Use a biblioteca MD5 FORNECIDA - md5_string(senha, hash_buffer)
+        md5_string(current_password, computed_hash);
         
         // TODO 5: Comparar com o hash alvo
         // Se encontrou: salvar resultado e terminar
+        if (strcmp(computed_hash, target_hash) == 0) {
+            printf("[Worker %d] SENHA ENCONTRADA: $s", worker_id, current_password);
+            save_result(worker_id, current_password);
+            break;
+        }
         
         // TODO 6: Incrementar para a próxima senha
         // DICA: Use a função increment_password implementada acima
+        int result_increment = increment_password(current_password, charset, charset_len, password_len);
         
         // TODO: Verificar se chegou ao fim do intervalo
         // Se sim: terminar loop
+        if (result_increment == 0) break;
         
         passwords_checked++;
     }
