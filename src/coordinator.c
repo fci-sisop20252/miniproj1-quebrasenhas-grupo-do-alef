@@ -118,19 +118,29 @@ int main(int argc, char *argv[]) {
     
     // IMPLEMENTE AQUI: Rdtcm notas: nao testei!!!
     long long total_possibilities = (long long)pow(password_len, charset_len); // --> numeros grandes pode ocorrer overflow 
-    long long passwords_per_worker = total_possibilities / MAX_WORKERS;
-    long long remaining = total_possibilities % MAX_WORKERS;
+    long long passwords_per_worker = total_possibilities / MAX_WORKERS;  // ### ? max_workers está correto ? ou seria num_workers do argv
+    long long remaining = total_possibilities % MAX_WORKERS;    // ### ? max_workers está correto ? ou seria num_workers do argv
     
     // Arrays para armazenar PIDs dos workers
-    pid_t workers[MAX_WORKERS];
+    pid_t workers[MAX_WORKERS];   //   ### ? max_workers está correto ? ou seria num_workers do argv
     
     // TODO 3: Criar os processos workers usando fork()
     printf("Iniciando workers...\n");
     
     // IMPLEMENTE AQUI: Loop para criar workers
     for (int i = 0; i < num_workers; i++) {
+        int inicioIntervalo = i *passwords_per_worker; //iniciar em intervalos diferentes para cada i do loop
+        int fimIntervalo; // onde acaba o intervalo desse processo
         // TODO: Calcular intervalo de senhas para este worker
+        if( i != (numworkers-1)){ //se nao for o ultimo então fim do intervalo = inicio + divisão das possibilidades
+        // Exemplo :se for 100 possibilidades / 4 processos, então fim = inicio[0,25,50] + divisão das possibilidades[25]- 1 = [24,49,74]
+            fim = inicioIntervalo + (passwords_per_worker -1); 
+        }
+        else{ //caso do ultimo processo fim = 100 - 1 logo o ultimo inicia em 75 e acaba em 99.
+            fim= total_possibilities-1;
+        }
         // TODO: Converter indices para senhas de inicio e fim
+        
         // TODO 4: Usar fork() para criar processo filho
         // TODO 5: No processo pai: armazenar PID
         // TODO 6: No processo filho: usar execl() para executar worker
