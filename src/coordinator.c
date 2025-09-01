@@ -142,8 +142,24 @@ int main(int argc, char *argv[]) {
         // TODO: Converter indices para senhas de inicio e fim
         
         // TODO 4: Usar fork() para criar processo filho
+        pid_t pid = fork();
+        if( pid < 0 ){
+            printf("Erro no fork!");
+            exit(1);
+        }
         // TODO 5: No processo pai: armazenar PID
+        if( pid >0 ){
+            workers[i]=pid;//armazena o pid do filho
+            println("worker: %d > pid: %d > intervalo de trabalho: %d até %d "i, workers[i], incioIntervalo, fimIntervalo); 
+            
+        }
         // TODO 6: No processo filho: usar execl() para executar worker
+        else{//filho que executa
+            exec1("./worker",target_hash,inicioIntervalo,fimIntervalo,charset,charset_len,pid);//testar.
+
+            perror("erro no exec1 filho %d!",i);
+            exit(1);
+        }
         // TODO 7: Tratar erros de fork() e execl()
     }
     
