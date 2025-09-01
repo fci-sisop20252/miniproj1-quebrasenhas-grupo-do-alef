@@ -49,7 +49,7 @@ int increment_password(char *password, const char *charset, int charset_len, int
     // - Se estourou: definir como primeiro caractere e continuar loop
     // - Se todos estouraram: retornar 0 (fim do espaço)
 
-    for (int i = password_len - 1; >= 0; i--) {
+    for (int i = password_len - 1;i >= 0; i--) {
         int index = 0;
 
         while (index < charset_len && charset[index] != password[i]) {
@@ -99,14 +99,23 @@ void save_result(int worker_id, const char *password) {
     // - Tentar abrir arquivo com O_CREAT | O_EXCL | O_WRONLY
     // - Se sucesso: escrever resultado e fechar
     // - Se falhou: outro worker já encontrou
-
-
+    int fd = open("password_found.txt", O_CREAT | O_EXCL | O_WRONLY, 0644);
+    if (fd >= 0) {
+        char buffer[256];
+        int tamanho = snprintf(buffer, sizeof(buffer), "%d:%s\n", worker_id, password);
+        write(fd, buffer, tamanho);
+        close(fd);
+        printf("[Worker %d] Resultado salvo!\n", worker_id);
+    }else {
+        printf("Outro Worker já encontrou a senha!");
+    }
 }
 
 /**
  * Função principal do worker
  */
 int main(int argc, char *argv[]) {
+    long long veri_progress = 0;
     // Validar argumentos
     if (argc != 7) {
         fprintf(stderr, "Uso interno: %s <hash> <start> <end> <charset> <len> <id>\n", argv[0]);
@@ -149,7 +158,15 @@ int main(int argc, char *argv[]) {
     while (1) {
         // TODO 3: Verificar periodicamente se outro worker já encontrou a senha
         // DICA: A cada PROGRESS_INTERVAL senhas, verificar se arquivo resultado existe
-        
+        if(veri_progress == PROGRESS_INTERVAL){
+            int fd = open("password_found.txt", O_RDONLY);
+            if (fd >= 0) {
+            close(fd);
+            break; 
+            }else{
+            veri_progress = 0;
+            }
+        }
         // TODO 4: Calcular o hash MD5 da senha atual
         // IMPORTANTE: Use a biblioteca MD5 FORNECIDA - md5_string(senha, hash_buffer)
         md5_string(current_password, computed_hash);
@@ -171,6 +188,7 @@ int main(int argc, char *argv[]) {
         if (result_increment == 0) break;
         
         passwords_checked++;
+        veri_progress++;
     }
     
     // Estatísticas finais
