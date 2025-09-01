@@ -132,12 +132,12 @@ int main(int argc, char *argv[]) {
         int inicioIntervalo = i *passwords_per_worker; //iniciar em intervalos diferentes para cada i do loop
         int fimIntervalo; // onde acaba o intervalo desse processo
         // TODO: Calcular intervalo de senhas para este worker
-        if( i != (numworkers-1)){ //se nao for o ultimo então fim do intervalo = inicio + divisão das possibilidades
+        if( i != (num_workers-1)){ //se nao for o ultimo então fim do intervalo = inicio + divisão das possibilidades
         // Exemplo :se for 100 possibilidades / 4 processos, então fim = inicio[0,25,50] + divisão das possibilidades[25]- 1 = [24,49,74]
-            fim = inicioIntervalo + (passwords_per_worker -1); 
+            fimIntervalo = inicioIntervalo + (passwords_per_worker -1); 
         }
         else{ //caso do ultimo processo fim = 100 - 1 logo o ultimo inicia em 75 e acaba em 99.
-            fim= total_possibilities-1;
+            fimIntervalo = total_possibilities-1;
         }
         // TODO: Converter indices para senhas de inicio e fim
         
@@ -174,6 +174,24 @@ int main(int argc, char *argv[]) {
     // - Fazer parse do formato "worker_id:password"
     // - Verificar o hash usando md5_string()
     // - Exibir resultado encontrado
+    int sz;
+    int fd = open(RESULT_FILE, O_RDONLY, 0644);
+    if (fd >= 0) {
+        char buffer[256];
+
+        sz = read(fd, buffer, sizeof(buffer) - 1);
+        buffer[sz] = '\0';
+        close(fd);
+        char* token = strtok(buffer, " : ");
+        token = strtok(NULL, " : ");
+        if (strcmp(token, target_hash) == 0) {
+            
+            printf("Senha Encontrada");//Implementar e mandar a senha coletada não na forma MD5
+           
+        }
+    }else {
+        printf("Erro ao abrir o arquivo!");
+    }
     
     // Estatísticas finais (opcional)
     // TODO: Calcular e exibir estatísticas de performance
