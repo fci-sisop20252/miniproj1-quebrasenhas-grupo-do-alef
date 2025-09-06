@@ -174,7 +174,7 @@ int main(int argc, char *argv[]) {
         // TODO 5: Comparar com o hash alvo
         // Se encontrou: salvar resultado e terminar
         if (strcmp(computed_hash, target_hash) == 0) {
-            printf("[Worker %d] SENHA ENCONTRADA: $s", worker_id, current_password);
+            printf("[Worker %d] SENHA ENCONTRADA: %s", worker_id, current_password);
             save_result(worker_id, current_password);
             break;
         }

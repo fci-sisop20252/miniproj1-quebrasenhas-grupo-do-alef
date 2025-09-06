@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
             fimIntervalo = inicioIntervalo + (passwords_per_worker -1); 
         }
         else{ //caso do ultimo processo fim = 100 - 1 logo o ultimo inicia em 75 e acaba em 99.
-            fimIntervalo = total_possibilities-1;
+            fimIntervalo = total_space - 1;
         }
         // TODO: Converter indices para senhas de inicio e fim
         
@@ -156,7 +156,7 @@ int main(int argc, char *argv[]) {
         // TODO 5: No processo pai: armazenar PID
         if( pid >0 ){
             workers[i]=pid;//armazena o pid do filho
-            printf("worker: %d > pid: %d > intervalo de trabalho: %d até %d \n",i, workers[i], incioIntervalo, fimIntervalo); 
+            printf("worker: %d > pid: %d > intervalo de trabalho: %d até %d \n",i, workers[i], inicioIntervalo, fimIntervalo); 
             
         }
         // TODO 6: No processo filho: usar execl() para executar worker
@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
             exec1("./worker", "./worker",target_hash, inicioStr,fimStr,
                 charset,charsetLenStr,passLenStr, workerIdStr,(char *)NULL);//testar.
 
-            perror("erro no exec1 filho %d!",i);
+            perror("erro no exec1 filho!");
             _exit(1); //terminar o filho depois
         }
         // TODO 7: Tratar erros de fork() e execl()
@@ -190,12 +190,12 @@ int main(int argc, char *argv[]) {
     // - Identificar qual worker terminou
     // - Verificar se terminou normalmente ou com erro
     // - Contar quantos workers terminaram
-    int terminados = 0 ;
+    int terminados = 0;
     int status;
     while(terminados < num_workers){
-        pid_t w = wait(&status)
+        pid_t w = wait(&status);
         //apos erro 10 é definido para errno que contem as definições valores de errros, sendo 10 para ECHILD(sem processos filhos restantes)
-        if(w== -1){
+        if (w == -1){
             if(errno ==EINTR)continue;
             if(errno ==ECHILD) break;
             perror("erro no wait");
@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
         } 
         if(worker_index == -1){ //não existe no array de workers[], 
             //stederr para condição anômala e diagnostica. 
-            fprintf(stederr,"PID retornado por wait nao existe no array", w);
+            fprintf(stderr,"PID retornado por wait nao existe no array", w);
         }
             
         if(WIFEXITED(status)){
