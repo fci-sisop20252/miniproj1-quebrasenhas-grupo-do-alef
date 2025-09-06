@@ -144,15 +144,6 @@ int main(int argc, char *argv[]) {
     long long passwords_checked = 0;
     time_t start_time = time(NULL);
     time_t last_progress_time = start_time;
-
-     //teste do incremenbto de passwd
-    // CÓDIGO DE TESTE - REMOVER DEPOIS
-    char test[4] = "aaa";
-    for (int i = 0; i < 10; i++) {
-        printf("Senha %d: %s\n", i, test);
-        increment_password(test, "abc", 3, 3);
-    }
-    return 0;  // Sair após teste
     
     // Loop principal de verificação
     while (1) {
