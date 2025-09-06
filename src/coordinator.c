@@ -65,7 +65,10 @@ int main(int argc, char *argv[]) {
     // TODO 1: Validar argumentos de entrada
     // Verificar se argc == 5 (programa + 4 argumentos)
     // Se não, imprimir mensagem de uso e sair com código 1
-    
+    if(argv !=5){
+        printf("Erro: argv != 5");
+        return 1;
+    }
     // IMPLEMENTE AQUI: verificação de argc e mensagem de erro
     
     // Parsing dos argumentos (após validação)
@@ -117,9 +120,12 @@ int main(int argc, char *argv[]) {
     // DICA: Use divisão inteira e distribua o resto entre os primeiros workers
     
     // IMPLEMENTE AQUI: Rdtcm notas: nao testei!!!
-    long long total_possibilities = (long long)pow(password_len, charset_len); // --> numeros grandes pode ocorrer overflow 
-    long long passwords_per_worker = total_possibilities / MAX_WORKERS;  // ### ? max_workers está correto ? ou seria num_workers do argv
-    long long remaining = total_possibilities % MAX_WORKERS;    // ### ? max_workers está correto ? ou seria num_workers do argv
+    //long long total_possibilities = (long long)pow(password_len, charset_len); // --> numeros grandes pode ocorrer overflow 
+    //long long passwords_per_worker = total_possibilities / MAX_WORKERS;  // ### ? max_workers está correto ? ou seria num_workers do argv
+    //long long remaining = total_possibilities % MAX_WORKERS;    // ### ? max_workers está correto ? ou seria num_workers do argv
+
+    long long passwords_per_worker = total_space / num_workers;
+    long long remaining = total_space % num_workers;
     
     // Arrays para armazenar PIDs dos workers
     pid_t workers[MAX_WORKERS];   //   ### ? max_workers está correto ? ou seria num_workers do argv
@@ -150,15 +156,25 @@ int main(int argc, char *argv[]) {
         // TODO 5: No processo pai: armazenar PID
         if( pid >0 ){
             workers[i]=pid;//armazena o pid do filho
-            println("worker: %d > pid: %d > intervalo de trabalho: %d até %d "i, workers[i], incioIntervalo, fimIntervalo); 
+            printf("worker: %d > pid: %d > intervalo de trabalho: %d até %d \n",i, workers[i], incioIntervalo, fimIntervalo); 
             
         }
         // TODO 6: No processo filho: usar execl() para executar worker
         else{//filho que executa
-            exec1("./worker",target_hash,inicioIntervalo,fimIntervalo,charset,charset_len,pid);//testar.
+            //para exec1 e necessario converter os argumentos
+            char inicioStr[32],fimStr[32],charsetLenStr[16],passLenStr[16],workerIdStr[8];
+            //snprintf converte de maneira segura limitando o maximo de tamanho
+            sniprintf(inicioStr, sizeof(inicioStr),"%lld",inicioIntervalo);
+            sniprintf(fimStr, sizeof(fimStr),"%lld",fimIntervalo);
+            sniprintf(charsetLenStr, sizeof(charsetLenStr),"%lld",charset_len);
+            sniprintf(passLenStr, sizeof(passLenStr),"%d",password_len);
+            sniprintf(workerIdStr, sizeof(workerIdStr),"%d", i);
+            
+            exec1("./worker", "./worker",target_hash, inicioStr,fimStr,
+                charset,charsetLenStr,passLenStr, workerIdStr,(char *)NULL);//testar.
 
             perror("erro no exec1 filho %d!",i);
-            exit(1);
+            _exit(1); //terminar o filho depois
         }
         // TODO 7: Tratar erros de fork() e execl()
     }
@@ -174,6 +190,8 @@ int main(int argc, char *argv[]) {
     // - Identificar qual worker terminou
     // - Verificar se terminou normalmente ou com erro
     // - Contar quantos workers terminaram
+    
+
     
     // Registrar tempo de fim
     time_t end_time = time(NULL);
