@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include "hash_utils.h"
-
+#include <errno.h>
 /**
  * PROCESSO COORDENADOR - Mini-Projeto 1: Quebra de Senhas Paralelo
  * 
@@ -190,7 +190,41 @@ int main(int argc, char *argv[]) {
     // - Identificar qual worker terminou
     // - Verificar se terminou normalmente ou com erro
     // - Contar quantos workers terminaram
-    
+    int terminados = 0 ;
+    int status;
+    while(terminados < num_workers){
+        pid_t w = wait(&status)
+        //apos erro 10 é definido para errno que contem as definições valores de errros, sendo 10 para ECHILD(sem processos filhos restantes)
+        if(w== -1){
+            if(errno ==EINTR)continue;
+            if(errno ==ECHILD) break;
+            perror("erro no wait");
+            break;
+        }
+        int worker_index = -1;//serve como flag 
+        for (int i =0; i<num_workers; i++){
+            if(workers[i] == w){ //compara worker[i] com o w retornado, se estiver no array>encontrado >muda o valor workers[i] para 0
+                worker_index = i;
+                workers[i] =0;
+                break;
+            }
+        } 
+        if(worker_index == -1){ //não existe no array de workers[], 
+            //stederr para condição anômala e diagnostica. 
+            fprintf(stederr,"PID retornado por wait nao existe no array", w);
+        }
+            
+        if(WIFEXITED(status)){
+            int exit_code = WEXITSTATUS(status);
+            printf("Filho terminado normalmente! codigo status: %d \n",exit_code);
+        } else if (WIFSIGNALED(status)){
+            int sig= WTERMSIG(status);
+            printf("Terminado por sinal %d\n",sig);
+        } else{
+            printf("Terminado com status: %d\n", status);
+        }
+        terminados++;
+    }//https://br-c.org/doku.php?id=wait && https://learn.microsoft.com/pt-br/cpp/c-runtime-library/errno-constants?view=msvc-170
 
     
     // Registrar tempo de fim
