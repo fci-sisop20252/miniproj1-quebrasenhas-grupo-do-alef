@@ -1,6 +1,6 @@
 # Relatório: Mini-Projeto 1 - Quebra-Senhas Paralelo
 
-**Aluno(s):** Nome (Matrícula), Nome (Matrícula),,,  
+**Aluno(s):** Alef (RA: ), Derick (RA:), Renan (RA:), Ryan (RA: 10352727) 
 ---
 
 ## 1. Estratégia de Paralelização
@@ -60,6 +60,8 @@ O speedup é o tempo do teste com 1 worker dividido pelo tempo com 4 workers.
 ## 5. Desafios e Aprendizados
 **Qual foi o maior desafio técnico que você enfrentou?**
 [Descreva um problema e como resolveu. Ex: "Tive dificuldade com o incremento de senha, mas resolvi tratando-o como um contador em base variável"]
+
+Tivemos dificuldades ao usar o fork() para criar múltiplos processos filhos, pois todos os filhos estavam executando o mesmo código do processo pai, o que causava repetição de tarefas ou conflitos. Para resolver isso, usamos fork() seguido de exec(), permitindo que cada filho substituísse sua imagem de processo por uma nova tarefa especificia, garantindo a separação correta das responsabilidades entre os processos.
 
 ---
 
