@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
     //long long total_possibilities = (long long)pow(password_len, charset_len); // --> numeros grandes pode ocorrer overflow 
     //long long passwords_per_worker = total_possibilities / MAX_WORKERS;  // ### ? max_workers está correto ? ou seria num_workers do argv
     //long long remaining = total_possibilities % MAX_WORKERS;    // ### ? max_workers está correto ? ou seria num_workers do argv
-
+    long long total_possibilities = (long long)pow(password_len, charset_len);
     long long passwords_per_worker = total_space / num_workers;
     long long remaining = total_space % num_workers;
     
@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
             fimIntervalo = inicioIntervalo + (passwords_per_worker -1); 
         }
         else{ //caso do ultimo processo fim = 100 - 1 logo o ultimo inicia em 75 e acaba em 99.
-            fimIntervalo = total_space - 1;
+            fimIntervalo = total_possibilities - 1;
         }
         // TODO: Converter indices para senhas de inicio e fim
         
