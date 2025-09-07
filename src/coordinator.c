@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
             snprintf(passLenStr, sizeof(passLenStr),"%d",password_len);
             snprintf(workerIdStr, sizeof(workerIdStr),"%d", i);
             
-            exec1("./worker", "./worker",target_hash, inicioStr,fimStr,
+            execl("./worker", "./worker",target_hash, inicioStr,fimStr,
                 charset,charsetLenStr,passLenStr, workerIdStr,(char *)NULL);//testar.
 
             perror("erro no exec1 filho!");
