@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     // Verificar se argc == 5 (programa + 4 argumentos)
     // Se não, imprimir mensagem de uso e sair com código 1
     if(argc !=5){
-        printf("Erro: argv != 5");
+        printf("Erro: argc != 5");
         return 1;
     }
     // IMPLEMENTE AQUI: verificação de argc e mensagem de erro
@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
             fimIntervalo = inicioIntervalo + (passwords_per_worker -1); 
         }
         else{ //caso do ultimo processo fim = 100 - 1 logo o ultimo inicia em 75 e acaba em 99.
-            fimIntervalo = total_possibilities - 1;
+            fimIntervalo = total_space - 1;
         }
         // TODO: Converter indices para senhas de inicio e fim
         
