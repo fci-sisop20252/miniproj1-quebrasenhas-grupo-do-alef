@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
     // TODO 1: Validar argumentos de entrada
     // Verificar se argc == 5 (programa + 4 argumentos)
     // Se não, imprimir mensagem de uso e sair com código 1
-    if(argc != 5){
+    if(argc !=5){
         printf("Erro: argc != 5");
         return 1;
     }
@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
             //snprintf converte de maneira segura limitando o maximo de tamanho
             snprintf(inicioStr, sizeof(inicioStr),"%lld",inicioIntervalo);
             snprintf(fimStr, sizeof(fimStr),"%lld",fimIntervalo);
-            snprintf(charsetLenStr, sizeof(charsetLenStr),"%lld",charset_len);
+            //snprintf(charsetLenStr, sizeof(charsetLenStr),"%lld",charset_len);
             snprintf(passLenStr, sizeof(passLenStr),"%d",password_len);
             snprintf(workerIdStr, sizeof(workerIdStr),"%d", i);
 
@@ -257,8 +257,8 @@ int main(int argc, char *argv[]) {
         sz = read(fd, buffer, sizeof(buffer) - 1);
         buffer[sz] = '\0';
         close(fd);
-        char* token = strtok(buffer, " : ");
-        token = strtok(NULL, " : ");
+        char* token = strtok(buffer, ":");
+        token = strtok(NULL, ":");
         if (strcmp(token, target_hash) == 0) {
             
             printf("Senha Encontrada");//Implementar e mandar a senha coletada não na forma MD5
