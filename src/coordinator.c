@@ -164,11 +164,11 @@ int main(int argc, char *argv[]) {
             //para exec1 e necessario converter os argumentos
             char inicioStr[32],fimStr[32],charsetLenStr[16],passLenStr[16],workerIdStr[8];
             //snprintf converte de maneira segura limitando o maximo de tamanho
-            sniprintf(inicioStr, sizeof(inicioStr),"%lld",inicioIntervalo);
-            sniprintf(fimStr, sizeof(fimStr),"%lld",fimIntervalo);
-            sniprintf(charsetLenStr, sizeof(charsetLenStr),"%lld",charset_len);
-            sniprintf(passLenStr, sizeof(passLenStr),"%d",password_len);
-            sniprintf(workerIdStr, sizeof(workerIdStr),"%d", i);
+            snprintf(inicioStr, sizeof(inicioStr),"%lld",inicioIntervalo);
+            snprintf(fimStr, sizeof(fimStr),"%lld",fimIntervalo);
+            snprintf(charsetLenStr, sizeof(charsetLenStr),"%lld",charset_len);
+            snprintf(passLenStr, sizeof(passLenStr),"%d",password_len);
+            snprintf(workerIdStr, sizeof(workerIdStr),"%d", i);
             
             exec1("./worker", "./worker",target_hash, inicioStr,fimStr,
                 charset,charsetLenStr,passLenStr, workerIdStr,(char *)NULL);//testar.
