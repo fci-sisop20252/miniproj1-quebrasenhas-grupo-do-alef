@@ -8,6 +8,7 @@
 #include <time.h>
 #include "hash_utils.h"
 #include <errno.h>
+#include <math.h>
 /**
  * PROCESSO COORDENADOR - Mini-Projeto 1: Quebra de Senhas Paralelo
  * 
@@ -65,8 +66,8 @@ int main(int argc, char *argv[]) {
     // TODO 1: Validar argumentos de entrada
     // Verificar se argc == 5 (programa + 4 argumentos)
     // Se não, imprimir mensagem de uso e sair com código 1
-    if(argv !=5){
-        printf("Erro: argv != 5");
+    if(argc != 5){
+        printf("Erro: argc != 5");
         return 1;
     }
     // IMPLEMENTE AQUI: verificação de argc e mensagem de erro
@@ -144,7 +145,7 @@ int main(int argc, char *argv[]) {
             fimIntervalo = inicioIntervalo + (passwords_per_worker -1); 
         }
         else{ //caso do ultimo processo fim = 100 - 1 logo o ultimo inicia em 75 e acaba em 99.
-            fimIntervalo = total_possibilities - 1;
+            fimIntervalo = total_space - 1;
         }
         // TODO: Converter indices para senhas de inicio e fim
         
@@ -164,15 +165,20 @@ int main(int argc, char *argv[]) {
         else{//filho que executa
             //para exec1 e necessario converter os argumentos
             char inicioStr[32],fimStr[32],charsetLenStr[16],passLenStr[16],workerIdStr[8];
+            char inicioSenha[32],fimSenha[32] ;
             //snprintf converte de maneira segura limitando o maximo de tamanho
             snprintf(inicioStr, sizeof(inicioStr),"%lld",inicioIntervalo);
             snprintf(fimStr, sizeof(fimStr),"%lld",fimIntervalo);
             snprintf(charsetLenStr, sizeof(charsetLenStr),"%lld",charset_len);
             snprintf(passLenStr, sizeof(passLenStr),"%d",password_len);
             snprintf(workerIdStr, sizeof(workerIdStr),"%d", i);
+
+            index_to_password(inicioIntervalo,charset, charset_len,password_len,inicioSenha);
+            index_to_password(fimIntervalo,charset, charset_len,password_len,fimSenha);
             
-            execl("./worker", "./worker",target_hash, inicioStr,fimStr,
-                charset,charsetLenStr,passLenStr, workerIdStr,(char *)NULL);//testar.
+            
+            execl("./worker",target_hash, inicioSenha,fimSenha,
+                charset,passLenStr, workerIdStr, (char *)NULL);//testar.
 
             perror("erro no exec1 filho!");
             _exit(1); //terminar o filho depois

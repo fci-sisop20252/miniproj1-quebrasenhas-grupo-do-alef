@@ -117,20 +117,22 @@ void save_result(int worker_id, const char *password) {
 int main(int argc, char *argv[]) {
     long long veri_progress = 0;
     // Validar argumentos
-    if (argc != 7) {
+    
+    if (argc != 6) {
         fprintf(stderr, "Uso interno: %s <hash> <start> <end> <charset> <len> <id>\n", argv[0]);
         return 1;
     }
     
     // Parse dos argumentos
-    const char *target_hash = argv[1];
-    char *start_password = argv[2];
-    const char *end_password = argv[3];
-    const char *charset = argv[4];
-    int password_len = atoi(argv[5]);
-    int worker_id = atoi(argv[6]);
+    const char *target_hash = argv[0];
+    char *start_password = argv[1];
+    const char *end_password = argv[2];
+    const char *charset = argv[3];
+    int password_len = atoi(argv[4]);
+    int worker_id = atoi(argv[5]);
     int charset_len = strlen(charset);
-    
+    printf("%s , %s \n",argv[1],argv[2]);
+    printf("./worker %s %s %s %s %s %s\n",argv[0],argv[1] ,argv[2],argv[3], argv[4] ,argv[5]);
     printf("[Worker %d] Iniciado: %s até %s\n", worker_id, start_password, end_password);
     
     // Buffer para a senha atual
@@ -161,7 +163,6 @@ int main(int argc, char *argv[]) {
         // TODO 4: Calcular o hash MD5 da senha atual
         // IMPORTANTE: Use a biblioteca MD5 FORNECIDA - md5_string(senha, hash_buffer)
         md5_string(current_password, computed_hash);
-        
         // TODO 5: Comparar com o hash alvo
         // Se encontrou: salvar resultado e terminar
         if (strcmp(computed_hash, target_hash) == 0) {
