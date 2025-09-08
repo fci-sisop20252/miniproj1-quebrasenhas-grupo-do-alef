@@ -1,6 +1,6 @@
 # Relatório: Mini-Projeto 1 - Quebra-Senhas Paralelo
 
-**Aluno(s):** Alef (RA: ), Derick (RA:), Renan (RA:), Ryan (RA: 10352727) 
+**Aluno(s):** Alef (RA: ), Derick (RA:), Renan (RA:10438120), Ryan (RA: 10352727) 
 ---
 
 ## 1. Estratégia de Paralelização
@@ -12,7 +12,9 @@
 
 **Código relevante:** Cole aqui a parte do coordinator.c onde você calcula a divisão:
 ```c
-// Cole seu código de divisão aqui
+long long total_space = calculate_search_space(charset_len, password_len);
+long long passwords_per_worker = total_space / num_workers;
+    long long remaining = total_space % num_workers;
 ```
 
 ---
@@ -25,7 +27,55 @@
 
 **Código do fork/exec:**
 ```c
-// Cole aqui seu loop de criação de workers
+for (int i = 0; i < num_workers; i++) {
+        int inicioIntervalo = i *passwords_per_worker; //iniciar em intervalos diferentes para cada i do loop
+        int fimIntervalo; // onde acaba o intervalo desse processo
+        // TODO: Calcular intervalo de senhas para este worker
+        if( i != (num_workers-1)){ //se nao for o ultimo então fim do intervalo = inicio + divisão das possibilidades
+        // Exemplo :se for 100 possibilidades / 4 processos, então fim = inicio[0,25,50] + divisão das possibilidades[25]- 1 = [24,49,74]
+            fimIntervalo = inicioIntervalo + (passwords_per_worker -1); 
+        }
+        else{ //caso do ultimo processo fim = 100 - 1 logo o ultimo inicia em 75 e acaba em 99.
+            fimIntervalo = total_space - 1;
+        }
+        // TODO: Converter indices para senhas de inicio e fim
+        
+        // TODO 4: Usar fork() para criar processo filho
+        pid_t pid = fork();
+        if( pid < 0 ){
+            printf("Erro no fork!");
+            exit(1);
+        }
+        // TODO 5: No processo pai: armazenar PID
+        if( pid >0 ){
+            workers[i]=pid;//armazena o pid do filho
+            printf("worker: %d > pid: %d > intervalo de trabalho: %d até %d \n",i, workers[i], inicioIntervalo, fimIntervalo); 
+            
+        }
+        // TODO 6: No processo filho: usar execl() para executar worker
+        else{//filho que executa
+            //para exec1 e necessario converter os argumentos
+            char inicioStr[32],fimStr[32],charsetLenStr[16],passLenStr[16],workerIdStr[8];
+            char inicioSenha[32],fimSenha[32] ;
+            //snprintf converte de maneira segura limitando o maximo de tamanho
+            snprintf(inicioStr, sizeof(inicioStr),"%lld",inicioIntervalo);
+            snprintf(fimStr, sizeof(fimStr),"%lld",fimIntervalo);
+            //snprintf(charsetLenStr, sizeof(charsetLenStr),"%lld",charset_len);
+            snprintf(passLenStr, sizeof(passLenStr),"%d",password_len);
+            snprintf(workerIdStr, sizeof(workerIdStr),"%d", i);
+
+            index_to_password(inicioIntervalo,charset, charset_len,password_len,inicioSenha);
+            index_to_password(fimIntervalo,charset, charset_len,password_len,fimSenha);
+            
+            
+            execl("./worker",target_hash, inicioSenha,fimSenha,
+                charset,passLenStr, workerIdStr, (char *)NULL);//testar.
+
+            perror("erro no exec1 filho!");
+            _exit(1); //terminar o filho depois
+        }
+        // TODO 7: Tratar erros de fork() e execl()
+    }
 ```
 
 ---
@@ -39,7 +89,9 @@ Leia sobre condições de corrida (aqui)[https://pt.stackoverflow.com/questions/
 
 **Como o coordinator consegue ler o resultado?**
 
-[Explique como o coordinator lê o arquivo de resultado e faz o parse da informação]
+Ele le o arquivo do resultado, caso o arquivo não exista ele continua , caso ele exista ele para em todos outros workes, esse ciclo
+é repetido a cada PROGRESS_INTERVAL no nosso caso definimos ele como 100000 o que funciona para senhas maiores onde existe um tempo
+necessario maior
 
 ---
 
@@ -49,8 +101,8 @@ O speedup é o tempo do teste com 1 worker dividido pelo tempo com 4 workers.
 
 | Teste | 1 Worker | 2 Workers | 4 Workers | Speedup (4w) |
 |-------|----------|-----------|-----------|--------------|
-| Hash: 202cb962ac59075b964b07152d234b70<br>Charset: "0123456789"<br>Tamanho: 3<br>Senha: "123" | ___s | ___s | ___s | ___ |
-| Hash: 5d41402abc4b2a76b9719d911017c592<br>Charset: "abcdefghijklmnopqrstuvwxyz"<br>Tamanho: 5<br>Senha: "hello" | ___s | ___s | ___s | ___ |
+| Hash: 202cb962ac59075b964b07152d234b70<br>Charset: "0123456789"<br>Tamanho: 3<br>Senha: "123" | real:0m0.007s | real:0m0.007s | real:0m0.007s | 0m0.001s |
+| Hash: 5d41402abc4b2a76b9719d911017c592<br>Charset: "abcdefghijklmnopqrstuvwxyz"<br>Tamanho: 5<br>Senha: "hello" | real:0m4.474s | real:0m7.808s | real:0m1.598s | 2.799S |
 
 **O speedup foi linear? Por quê?**
 [Analise se dobrar workers realmente dobrou a velocidade e explique o overhead de criar processos]
@@ -81,7 +133,7 @@ time ./coordinator "5d41402abc4b2a76b9719d911017c592" 5 "abcdefghijklmnopqrstuvw
 ---
 
 **Checklist de Entrega:**
-- [ ] Código compila sem erros
-- [ ] Todos os TODOs foram implementados
+- [X] Código compila sem erros
+- [X] Todos os TODOs foram implementados
 - [ ] Testes passam no `./tests/simple_test.sh`
 - [ ] Relatório preenchido

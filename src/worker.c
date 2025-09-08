@@ -99,6 +99,7 @@ void save_result(int worker_id, const char *password) {
     // - Tentar abrir arquivo com O_CREAT | O_EXCL | O_WRONLY
     // - Se sucesso: escrever resultado e fechar
     // - Se falhou: outro worker já encontrou
+    
     int fd = open(RESULT_FILE, O_CREAT | O_EXCL | O_WRONLY, 0644);
     if (fd >= 0) {
         char buffer[256];
