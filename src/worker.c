@@ -132,8 +132,8 @@ int main(int argc, char *argv[]) {
     int password_len = atoi(argv[4]);
     int worker_id = atoi(argv[5]);
     int charset_len = strlen(charset);
-    printf("%s , %s \n",argv[1],argv[2]);
-    printf("./worker %s %s %s %s %s %s\n",argv[0],argv[1] ,argv[2],argv[3], argv[4] ,argv[5]);
+    //printf("%s , %s \n",argv[1],argv[2]);//testes
+    //printf("./worker %s %s %s %s %s %s\n",argv[0],argv[1] ,argv[2],argv[3], argv[4] ,argv[5]);//testes
     printf("[Worker %d] Iniciado: %s até %s\n", worker_id, start_password, end_password);
     
     // Buffer para a senha atual
@@ -188,7 +188,7 @@ int main(int argc, char *argv[]) {
     time_t end_time = time(NULL);
     double total_time = difftime(end_time, start_time);
     
-    printf("[Worker %d] Finalizado. Total: %lld senhas em %.2f segundos", 
+    printf("[Worker %d] Finalizado. Total: %lld senhas em %.5f segundos", 
            worker_id, passwords_checked, total_time);
     if (total_time > 0) {
         printf(" (%.0f senhas/s)", passwords_checked / total_time);

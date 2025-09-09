@@ -84,23 +84,23 @@ int main(int argc, char *argv[]) {
     // - num_workers deve estar entre 1 e MAX_WORKERS
     // - charset não pode ser vazio
     if (password_len >= 1 && password_len <= 10) 
-        printf("Valido!");
+        printf("( Password_len Valido! ");
     else 
         return 1;
 
     if (num_workers >= 1 && num_workers <= MAX_WORKERS) 
-        printf("num_workers validos");
+        printf("num_workers validos ");
     else 
         return 1;
 
     if (charset_len > 0) 
-        printf("Charset valido");
+        printf("Charset valido )");
     else 
         return 1;
   
 
     
-    printf("=== Mini-Projeto 1: Quebra de Senhas Paralelo ===\n");
+    printf("\n=== Mini-Projeto 1: Quebra de Senhas Paralelo ===\n");
     printf("Hash MD5 alvo: %s\n", target_hash);
     printf("Tamanho da senha: %d\n", password_len);
     printf("Charset: %s (tamanho: %d)\n", charset, charset_len);
@@ -137,8 +137,8 @@ int main(int argc, char *argv[]) {
     
     // IMPLEMENTE AQUI: Loop para criar workers
     for (int i = 0; i < num_workers; i++) {
-        int inicioIntervalo = i *passwords_per_worker; //iniciar em intervalos diferentes para cada i do loop
-        int fimIntervalo; // onde acaba o intervalo desse processo
+        long long inicioIntervalo = i *passwords_per_worker; //iniciar em intervalos diferentes para cada i do loop
+        long long fimIntervalo; // onde acaba o intervalo desse processo
         // TODO: Calcular intervalo de senhas para este worker
         if( i != (num_workers-1)){ //se nao for o ultimo então fim do intervalo = inicio + divisão das possibilidades
         // Exemplo :se for 100 possibilidades / 4 processos, então fim = inicio[0,25,50] + divisão das possibilidades[25]- 1 = [24,49,74]
@@ -249,23 +249,45 @@ int main(int argc, char *argv[]) {
     // - Fazer parse do formato "worker_id:password"
     // - Verificar o hash usando md5_string()
     // - Exibir resultado encontrado
-    int sz;
-    int fd = open(RESULT_FILE, O_RDONLY, 0644);
-    if (fd >= 0) {
+    int fd = open(RESULT_FILE, O_RDONLY);
+    if (fd < 0) {
+        //arquivo não existe =>>senha não encontrada 
+        printf("Nenhum resultado encontrado (arquivo %s não existe)\n", RESULT_FILE);
+    } else {
         char buffer[256];
+        ssize_t sz = read(fd, buffer, sizeof(buffer) - 1);
+        if (sz <= 0) {//falha se retorna -1
+            if (sz == 0) {
+                printf("Arquivo %s está vazio\n", RESULT_FILE);
+            } else {
+                perror("Erro ao ler o arquivo");
+            }
+            close(fd);
+        } else {
+            buffer[sz] = '\0';
+            close(fd);
 
-        sz = read(fd, buffer, sizeof(buffer) - 1);
-        buffer[sz] = '\0';
-        close(fd);
-        char* token = strtok(buffer, ":");
-        token = strtok(NULL, ":");
-        if (strcmp(token, target_hash) == 0) {
-            
-            printf("Senha Encontrada");//Implementar e mandar a senha coletada não na forma MD5
-           
+            /* formato esperado: worker_id:senha\n */
+            char *worker_tok = strtok(buffer, ":");
+            char *senha = strtok(NULL, ":\n");
+            if (!senha) {
+                printf("Formato inesperado no arquivo de resultado\n");
+            } else {
+                //remover o /n do final da linha
+                size_t len = strlen(senha);
+                if (len > 0 && senha[len - 1] == '\n') {
+                    senha[len - 1] = '\0';
+                }
+                //calcular hash da senha e comparar com target_hash 
+                char hash_calc[33];
+                md5_string(senha, hash_calc);
+                if (strcmp(hash_calc, target_hash) == 0) {
+                    printf("Senha encontrada: %s\n", senha);
+                } else{
+                    printf("Senha no arquivo não corresponde ao hash!\n");
+                }
+            }
         }
-    }else {
-        printf("Erro ao abrir o arquivo!");
     }
     
     // Estatísticas finais (opcional)
