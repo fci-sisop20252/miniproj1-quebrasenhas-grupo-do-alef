@@ -1,6 +1,6 @@
 # Relatório: Mini-Projeto 1 - Quebra-Senhas Paralelo
 
-**Aluno(s):** Alef (RA:10431891 ), Derick (RA:), Renan (RA:10438120), Ryan (RA: 10352727) 
+**Aluno(s):** Alef (RA:10431891 ), Derick (RA:10443727), Renan (RA:10438120), Ryan (RA: 10352727) 
 ---
 
 ## 1. Estratégia de Paralelização
@@ -100,6 +100,7 @@ for (int i = 0; i < num_workers; i++) {
 
 [Explique como você implementou uma escrita atômica e como isso evita condições de corrida]
 Leia sobre condições de corrida (aqui)[https://pt.stackoverflow.com/questions/159342/o-que-%C3%A9-uma-condi%C3%A7%C3%A3o-de-corrida]
+Quando um worker encontra uma senha, ele a adiciona em um arquivo de resultado, após um certo intervalo de senhas geradas, os workers verificam esse arquivo para saberem se a senha já foi encontrada por outro worker, caso sim, eles param de procurar, caso não, continuam até o próximo intervalo e assim sucessivamente até a senha ser encontrada, evitando que mais de um worker escreva o resultado.
 
 **Como o coordinator consegue ler o resultado?**
 
@@ -120,6 +121,7 @@ O speedup é o tempo do teste com 1 worker dividido pelo tempo com 4 workers.
 
 **O speedup foi linear? Por quê?**
 [Analise se dobrar workers realmente dobrou a velocidade e explique o overhead de criar processos]
+O speedup foi linear, quanto mais workers, mais rápido foi a execução dos processos,então pode-se afirmar que é linear. O custo para o gerenciamento desses processos também foi aumentado, pois quanto mais workers, mais acessos são efetuados nos arquivos, e mais recurso de memória é utilizado, o que justifica o ganho de desempenho.
 
 ---
 
